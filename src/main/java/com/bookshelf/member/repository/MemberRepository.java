@@ -15,4 +15,6 @@ public interface MemberRepository {
     Member getByEmailAndPassword(String email, String password);
 
     void deleteAll();
+
+    Long count();
 }

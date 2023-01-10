@@ -1,5 +1,6 @@
 package com.bookshelf.global.error;
 
+import com.bookshelf.member.exception.MemberNotFoundException;
 import com.bookshelf.member.exception.NameDuplicateException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
 public class ExceptionController {
@@ -24,6 +27,17 @@ public class ExceptionController {
         }
 
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> MemberNotFound(MemberNotFoundException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(e.getStatusCode())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(NOT_FOUND).body(errorResponse);
     }
 
     @ResponseBody

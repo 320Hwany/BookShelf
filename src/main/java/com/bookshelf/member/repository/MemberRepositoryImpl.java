@@ -35,4 +35,9 @@ public class MemberRepositoryImpl implements MemberRepository {
     public void deleteAll() {
         memberJpaRepository.deleteAll();
     }
+
+    @Override
+    public Long count() {
+        return memberJpaRepository.count();
+    }
 }

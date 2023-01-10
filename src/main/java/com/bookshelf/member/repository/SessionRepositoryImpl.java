@@ -14,4 +14,14 @@ public class SessionRepositoryImpl implements SessionRepository {
     public void save(Session session) {
         sessionJpaRepository.save(session);
     }
+
+    @Override
+    public void deleteAll() {
+        sessionJpaRepository.deleteAll();
+    }
+
+    @Override
+    public Long count() {
+        return sessionJpaRepository.count();
+    }
 }

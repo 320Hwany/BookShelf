@@ -24,11 +24,6 @@ public class MemberService {
     private final SessionRepository sessionRepository;
     private final CreateAccessToken createAccessToken;
 
-    public boolean validateDuplication(MemberSignup memberSignup) {
-        Optional<Member> optionalMember = memberRepository.findByName(memberSignup.getName());
-        return optionalMember.isPresent();
-    }
-
     @Transactional
     public void signup(MemberSignup memberSignup) {
         if (validateDuplication(memberSignup)) {
@@ -36,6 +31,11 @@ public class MemberService {
         }
         Member member = new Member(memberSignup);
         memberRepository.save(member);
+    }
+
+    public boolean validateDuplication(MemberSignup memberSignup) {
+        Optional<Member> optionalMember = memberRepository.findByName(memberSignup.getName());
+        return optionalMember.isPresent();
     }
 
     @Transactional

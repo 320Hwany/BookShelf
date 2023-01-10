@@ -7,4 +7,8 @@ import org.springframework.stereotype.Repository;
 public interface SessionRepository {
 
     void save(Session session);
+
+    void deleteAll();
+
+    Long count();
 }
