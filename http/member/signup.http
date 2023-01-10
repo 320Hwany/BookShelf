@@ -1,0 +1,11 @@
+### 회원가입
+
+POST http://localhost:8080/signup
+Content-Type: application/json
+
+{
+  "name": "회원 이름",
+  "email": "yhwjd99@gmail.com",
+  "password": "1234",
+  "age": 25
+}
