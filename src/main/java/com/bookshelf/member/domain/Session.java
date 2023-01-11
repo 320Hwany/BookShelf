@@ -4,8 +4,11 @@ import com.bookshelf.member.dto.request.CreateAccessToken;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseCookie;
 
 import javax.persistence.*;
+
+import java.time.Duration;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -29,5 +32,17 @@ public class Session {
     public Session(Member member, CreateAccessToken createAccessToken) {
         this.member = member;
         this.accessToken = createAccessToken.getAccessToken();
+    }
+
+    public ResponseCookie setCookie() {
+        ResponseCookie cookie = ResponseCookie.from("SESSION", accessToken)
+                .domain("localhost")
+                .path("/")
+                .httpOnly(true)
+                .secure(false)
+                .maxAge(Duration.ofDays(30))
+                .sameSite("Strict")
+                .build();
+        return cookie;
     }
 }

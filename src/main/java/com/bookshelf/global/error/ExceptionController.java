@@ -2,6 +2,7 @@ package com.bookshelf.global.error;
 
 import com.bookshelf.member.exception.MemberNotFoundException;
 import com.bookshelf.member.exception.NameDuplicateException;
+import com.bookshelf.member.exception.UnauthorizedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @ControllerAdvice
 public class ExceptionController {
@@ -49,5 +51,16 @@ public class ExceptionController {
                 .build();
 
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> unauthorizedException(UnauthorizedException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(e.getStatusCode())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
     }
 }

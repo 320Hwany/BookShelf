@@ -1,8 +1,11 @@
 package com.bookshelf.member.controller;
 
 import com.bookshelf.member.domain.Member;
+import com.bookshelf.member.domain.Session;
+import com.bookshelf.member.dto.request.CreateAccessToken;
 import com.bookshelf.member.dto.request.MemberLogin;
 import com.bookshelf.member.dto.request.MemberSignup;
+import com.bookshelf.member.dto.request.MemberUpdate;
 import com.bookshelf.member.repository.MemberRepository;
 import com.bookshelf.member.repository.SessionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,13 +16,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseCookie;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import javax.servlet.http.Cookie;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -158,10 +165,6 @@ class MemberControllerTest {
                             .contentType(APPLICATION_JSON)
                             .content(json))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name").value("회원이름"))
-                    .andExpect(jsonPath("$.email").value("yhwjd99@gmail.com"))
-                    .andExpect(jsonPath("$.password").value("1234"))
-                    .andExpect(jsonPath("$.age").value(25))
                     .andDo(print());
         }
 
@@ -215,6 +218,196 @@ class MemberControllerTest {
                     .andExpect(jsonPath("$.code").value("404"))
                     .andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다"))
                     .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 수정 테스트 - Controller")
+    class UpdateMember {
+
+        @BeforeEach
+        void clean() {
+            sessionRepository.deleteAll();
+            memberRepository.deleteAll();
+        }
+
+        @Test
+        @DisplayName("회원 수정 테스트 - 성공")
+        void update() throws Exception {
+            // given
+            Member member = Member.builder()
+                    .name("회원이름")
+                    .email("yhwjd99@gmail.com")
+                    .password("1234")
+                    .age(25)
+                    .build();
+
+            MemberUpdate memberUpdate = MemberUpdate.builder()
+                    .name("회원 수정 이름")
+                    .email("yhwjd99@naver.com")
+                    .password("4321")
+                    .age(20)
+                    .build();
+
+            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
+
+            Session session = Session.builder()
+                    .member(member)
+                    .createAccessToken(testCreateAccessToken)
+                    .build();
+            memberRepository.save(member);
+            sessionRepository.save(session);
+            ResponseCookie cookie = session.setCookie();
+
+            String json = objectMapper.writeValueAsString(memberUpdate);
+
+            // expected
+            mockMvc.perform(patch("/update/{memberId}", member.getId())
+                            .contentType(APPLICATION_JSON)
+                            .cookie(new Cookie("SESSION", cookie.getValue()))
+                            .content(json))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("로그인하지 않은 회원은 회원 수정을 할 수 없습니다 - 실패")
+        void updateFail() throws Exception {
+            // given
+            Member member = Member.builder()
+                    .name("회원이름")
+                    .email("yhwjd99@gmail.com")
+                    .password("1234")
+                    .age(25)
+                    .build();
+
+            MemberUpdate memberUpdate = MemberUpdate.builder()
+                    .name("회원 수정 이름")
+                    .email("yhwjd99@naver.com")
+                    .password("4321")
+                    .age(20)
+                    .build();
+
+            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
+
+            Session session = Session.builder()
+                    .member(member)
+                    .createAccessToken(testCreateAccessToken)
+                    .build();
+            memberRepository.save(member);
+            sessionRepository.save(session);
+
+            String json = objectMapper.writeValueAsString(memberUpdate);
+
+            // expected
+            mockMvc.perform(patch("/update/{memberId}", member.getId())
+                            .contentType(APPLICATION_JSON)
+                            .content(json))
+                    .andExpect(status().isUnauthorized())
+                    .andDo(print());
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 삭제 테스트 - Controller")
+    class DeleteMember {
+
+        @BeforeEach
+        void clean() {
+            sessionRepository.deleteAll();
+            memberRepository.deleteAll();
+        }
+
+        @Test
+        @DisplayName("회원 정보가 존재하면 삭제가 됩니다 - 성공")
+        void delete() throws Exception {
+            // given
+            Member member = Member.builder()
+                    .name("회원이름")
+                    .email("yhwjd99@gmail.com")
+                    .password("1234")
+                    .age(25)
+                    .build();
+
+            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
+
+            Session session = Session.builder()
+                    .member(member)
+                    .createAccessToken(testCreateAccessToken)
+                    .build();
+            memberRepository.save(member);
+            sessionRepository.save(session);
+            ResponseCookie cookie = session.setCookie();
+
+            // expected
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", member.getId())
+                            .cookie(new Cookie("SESSION", cookie.getValue())))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("로그인을 하지 않으면 삭제에 실패합니다 - 실패")
+        void deleteFailByUnauthorized() throws Exception {
+            // given
+            Member member = Member.builder()
+                    .name("회원이름")
+                    .email("yhwjd99@gmail.com")
+                    .password("1234")
+                    .age(25)
+                    .build();
+
+            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
+
+            Session session = Session.builder()
+                    .member(member)
+                    .createAccessToken(testCreateAccessToken)
+                    .build();
+            memberRepository.save(member);
+            sessionRepository.save(session);
+            ResponseCookie cookie = session.setCookie();
+
+            // expected
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", member.getId()))
+                    .andExpect(status().isUnauthorized())
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("회원 정보가 존재하지 않으면 삭제에 실패합니다 - 실패")
+        void deleteFailByNotFound() throws Exception {
+            // given
+            Member member = Member.builder()
+                    .name("회원이름")
+                    .email("yhwjd99@gmail.com")
+                    .password("1234")
+                    .age(25)
+                    .build();
+
+            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
+
+            Session session = Session.builder()
+                    .member(member)
+                    .createAccessToken(testCreateAccessToken)
+                    .build();
+            memberRepository.save(member);
+            sessionRepository.save(session);
+            ResponseCookie cookie = session.setCookie();
+
+            // expected
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", 100L)
+                            .cookie(new Cookie("SESSION", cookie.getValue())))
+                    .andExpect(status().isNotFound())
+                    .andDo(print());
+        }
+    }
+
+    private class TestCreateAccessToken implements CreateAccessToken {
+
+        private final String MESSAGE = "testToken";
+        @Override
+        public String getAccessToken() {
+            return MESSAGE;
         }
     }
 }

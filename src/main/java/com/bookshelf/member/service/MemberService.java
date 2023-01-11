@@ -2,9 +2,9 @@ package com.bookshelf.member.service;
 
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.domain.Session;
-import com.bookshelf.member.dto.request.CreateAccessToken;
 import com.bookshelf.member.dto.request.MemberLogin;
 import com.bookshelf.member.dto.request.MemberSignup;
+import com.bookshelf.member.dto.request.MemberUpdate;
 import com.bookshelf.member.dto.response.MemberResponse;
 import com.bookshelf.member.exception.NameDuplicateException;
 import com.bookshelf.member.repository.MemberRepository;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -22,7 +23,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final SessionRepository sessionRepository;
-    private final CreateAccessToken createAccessToken;
 
     @Transactional
     public void signup(MemberSignup memberSignup) {
@@ -38,14 +38,23 @@ public class MemberService {
         return optionalMember.isPresent();
     }
 
-    @Transactional
-    public MemberResponse login(MemberLogin memberLogin) {
+    public Member getByMemberLogin(MemberLogin memberLogin) {
         Member member = memberRepository.getByEmailAndPassword(memberLogin.getEmail(), memberLogin.getPassword());
-        Session session = Session.builder()
-                .member(member)
-                .createAccessToken(createAccessToken)
-                .build();
-        sessionRepository.save(session);
+        return member;
+    }
+
+    @Transactional
+    public MemberResponse update(Long id, MemberUpdate memberUpdate) {
+        Member member = memberRepository.getById(id);
+        member.update(memberUpdate);
         return new MemberResponse(member);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Member member = memberRepository.getById(id);
+        List<Session> sessionList = sessionRepository.findAllByMemberId(member.getId());
+        sessionRepository.deleteList(sessionList);
+        memberRepository.delete(member);
     }
 }

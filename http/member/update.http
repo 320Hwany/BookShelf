@@ -1,0 +1,11 @@
+### 회원 수정
+
+PATCH http://localhost:8080/update/1
+Content-Type: application/json
+
+{
+  "name": "수정 회원 이름",
+  "email": "yhwjd99@naver.com",
+  "password": "4321",
+  "age": 20
+}
