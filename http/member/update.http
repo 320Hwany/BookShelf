@@ -1,6 +1,6 @@
 ### 회원 수정
 
-PATCH http://localhost:8080/update/1
+PATCH http://localhost:8080/update
 Content-Type: application/json
 
 {

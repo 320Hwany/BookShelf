@@ -2,10 +2,7 @@ package com.bookshelf.member.controller;
 
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.domain.Session;
-import com.bookshelf.member.dto.request.CreateAccessToken;
-import com.bookshelf.member.dto.request.MemberLogin;
-import com.bookshelf.member.dto.request.MemberSignup;
-import com.bookshelf.member.dto.request.MemberUpdate;
+import com.bookshelf.member.dto.request.*;
 import com.bookshelf.member.service.MemberService;
 import com.bookshelf.member.service.SessionService;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +37,13 @@ public class MemberController {
                 .build();
     }
 
-    @PatchMapping("/update/{memberId}")
-    public void updateMember(@PathVariable Long memberId, @RequestBody @Valid MemberUpdate memberUpdate) {
-        memberService.update(memberId, memberUpdate);
+    @PatchMapping("/update")
+    public void updateMember(MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate) {
+        memberService.update(memberSession.getId(), memberUpdate);
     }
 
-    @DeleteMapping("/delete/{memberId}")
-    public void deleteMember(@PathVariable Long memberId) {
-        memberService.delete(memberId);
+    @DeleteMapping("/delete")
+    public void deleteMember(MemberSession memberSession) {
+        memberService.delete(memberSession.getId());
     }
 }

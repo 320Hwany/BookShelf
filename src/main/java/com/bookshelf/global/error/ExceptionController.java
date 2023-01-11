@@ -1,5 +1,6 @@
 package com.bookshelf.global.error;
 
+import com.bookshelf.book.exception.BookNotFoundException;
 import com.bookshelf.member.exception.MemberNotFoundException;
 import com.bookshelf.member.exception.NameDuplicateException;
 import com.bookshelf.member.exception.UnauthorizedException;
@@ -34,6 +35,17 @@ public class ExceptionController {
     @ResponseBody
     @ExceptionHandler(MemberNotFoundException.class)
     public ResponseEntity<ErrorResponse> MemberNotFound(MemberNotFoundException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(e.getStatusCode())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(NOT_FOUND).body(errorResponse);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(BookNotFoundException.class)
+    public ResponseEntity<ErrorResponse> BookNotFound(BookNotFoundException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(e.getStatusCode())
                 .message(e.getMessage())

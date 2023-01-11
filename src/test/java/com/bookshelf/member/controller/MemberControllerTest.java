@@ -262,7 +262,7 @@ class MemberControllerTest {
             String json = objectMapper.writeValueAsString(memberUpdate);
 
             // expected
-            mockMvc.perform(patch("/update/{memberId}", member.getId())
+            mockMvc.perform(patch("/update")
                             .contentType(APPLICATION_JSON)
                             .cookie(new Cookie("SESSION", cookie.getValue()))
                             .content(json))
@@ -300,7 +300,7 @@ class MemberControllerTest {
             String json = objectMapper.writeValueAsString(memberUpdate);
 
             // expected
-            mockMvc.perform(patch("/update/{memberId}", member.getId())
+            mockMvc.perform(patch("/update")
                             .contentType(APPLICATION_JSON)
                             .content(json))
                     .andExpect(status().isUnauthorized())
@@ -340,7 +340,7 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", member.getId())
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete")
                             .cookie(new Cookie("SESSION", cookie.getValue())))
                     .andExpect(status().isOk())
                     .andDo(print());
@@ -368,7 +368,7 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", member.getId()))
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete"))
                     .andExpect(status().isUnauthorized())
                     .andDo(print());
         }
@@ -395,9 +395,8 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete/{memberId}", 100L)
-                            .cookie(new Cookie("SESSION", cookie.getValue())))
-                    .andExpect(status().isNotFound())
+            mockMvc.perform(MockMvcRequestBuilders.delete("/delete"))
+                    .andExpect(status().isUnauthorized())
                     .andDo(print());
         }
     }
