@@ -26,7 +26,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory)
+            throws Exception {
         HttpServletRequest httpServletRequest = getHttpServletRequest(webRequest);
         Cookie[] cookies = getCookies(httpServletRequest);
         Session session = getSession(cookies);
@@ -37,11 +38,12 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
                 .build();
     }
 
-    private Session getSession(Cookie[] cookies) {
-        String accessToken = cookies[0].getValue();
-        Session session = sessionRepository.findByAccessToken(accessToken)
-                .orElseThrow(UnauthorizedException::new);
-        return session;
+    private static HttpServletRequest getHttpServletRequest(NativeWebRequest webRequest) {
+        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+        if (httpServletRequest == null) {
+            throw new UnauthorizedException();
+        }
+        return httpServletRequest;
     }
 
     private static Cookie[] getCookies(HttpServletRequest httpServletRequest) {
@@ -52,11 +54,10 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
         return cookies;
     }
 
-    private static HttpServletRequest getHttpServletRequest(NativeWebRequest webRequest) {
-        HttpServletRequest httpServletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
-        if (httpServletRequest == null) {
-            throw new UnauthorizedException();
-        }
-        return httpServletRequest;
+    private Session getSession(Cookie[] cookies) {
+        String accessToken = cookies[0].getValue();
+        Session session = sessionRepository.findByAccessToken(accessToken)
+                .orElseThrow(UnauthorizedException::new);
+        return session;
     }
 }

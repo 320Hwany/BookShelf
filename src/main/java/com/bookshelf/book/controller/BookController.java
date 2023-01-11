@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,5 +26,10 @@ public class BookController {
     public BookResponse getBook(@PathVariable Long bookId) {
         Book book = bookService.getById(bookId);
         return new BookResponse(book);
+    }
+
+    @GetMapping("/books-latest")
+    public List<BookResponse> getBooksByLatest(@RequestParam Integer page) {
+        return bookService.findBookResponsesByLatest(page);
     }
 }

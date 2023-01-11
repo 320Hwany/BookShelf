@@ -1,5 +1,6 @@
 package com.bookshelf.member.controller;
 
+import com.bookshelf.book.repository.BookRepository;
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.domain.Session;
 import com.bookshelf.member.dto.request.CreateAccessToken;
@@ -44,12 +45,16 @@ class MemberControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private BookRepository bookRepository;
+
     @Nested
     @DisplayName("회원가입 테스트 - Controller")
     class Signup {
 
         @BeforeEach
         void clean() {
+            bookRepository.deleteAll();
             sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
@@ -137,6 +142,7 @@ class MemberControllerTest {
 
         @BeforeEach
         void clean() {
+            bookRepository.deleteAll();
             sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
@@ -227,6 +233,7 @@ class MemberControllerTest {
 
         @BeforeEach
         void clean() {
+            bookRepository.deleteAll();
             sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
@@ -314,6 +321,7 @@ class MemberControllerTest {
 
         @BeforeEach
         void clean() {
+            bookRepository.deleteAll();
             sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
