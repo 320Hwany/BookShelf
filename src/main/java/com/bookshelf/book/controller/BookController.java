@@ -28,8 +28,18 @@ public class BookController {
         return new BookResponse(book);
     }
 
-    @GetMapping("/books-latest")
+    @GetMapping("/books-orderBy-latest")
     public List<BookResponse> getBooksByLatest(@RequestParam Integer page) {
         return bookService.findBookResponsesByLatest(page);
+    }
+
+    @GetMapping("/books-orderBy-likes")
+    public List<BookResponse> getBooksByLikes(@RequestParam Integer page) {
+        return bookService.findBookResponsesByLikes(page);
+    }
+
+    @GetMapping("/bookmarked")
+    public List<BookResponse> getBookmarked(@RequestParam Integer page) {
+        return bookService.findBookmarkedBooks(page);
     }
 }

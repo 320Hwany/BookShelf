@@ -1,8 +1,28 @@
-### 책 저장
+### 책 저장1
 
 POST http://localhost:8080/book
 Content-Type: application/json
 
 {
-  "title": "책 제목"
+  "title": "책 제목1"
 }
+
+### 책 저장2
+
+POST http://localhost:8080/book
+Content-Type: application/json
+
+{
+  "title": "책 제목2"
+}
+
+### 책 저장3
+
+POST http://localhost:8080/book
+Content-Type: application/json
+
+{
+  "title": "책 제목3"
+}
+
+

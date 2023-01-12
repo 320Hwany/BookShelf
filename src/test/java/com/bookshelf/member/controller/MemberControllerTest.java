@@ -269,7 +269,7 @@ class MemberControllerTest {
             String json = objectMapper.writeValueAsString(memberUpdate);
 
             // expected
-            mockMvc.perform(patch("/update")
+            mockMvc.perform(patch("/member")
                             .contentType(APPLICATION_JSON)
                             .cookie(new Cookie("SESSION", cookie.getValue()))
                             .content(json))
@@ -307,7 +307,7 @@ class MemberControllerTest {
             String json = objectMapper.writeValueAsString(memberUpdate);
 
             // expected
-            mockMvc.perform(patch("/update")
+            mockMvc.perform(patch("/member")
                             .contentType(APPLICATION_JSON)
                             .content(json))
                     .andExpect(status().isUnauthorized())
@@ -348,7 +348,7 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete")
+            mockMvc.perform(MockMvcRequestBuilders.delete("/member")
                             .cookie(new Cookie("SESSION", cookie.getValue())))
                     .andExpect(status().isOk())
                     .andDo(print());
@@ -376,7 +376,7 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete"))
+            mockMvc.perform(MockMvcRequestBuilders.delete("/member"))
                     .andExpect(status().isUnauthorized())
                     .andDo(print());
         }
@@ -403,7 +403,7 @@ class MemberControllerTest {
             ResponseCookie cookie = session.setCookie();
 
             // expected
-            mockMvc.perform(MockMvcRequestBuilders.delete("/delete"))
+            mockMvc.perform(MockMvcRequestBuilders.delete("/member"))
                     .andExpect(status().isUnauthorized())
                     .andDo(print());
         }

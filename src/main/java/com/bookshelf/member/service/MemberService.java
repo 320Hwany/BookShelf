@@ -22,7 +22,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
     @Transactional
     public void signup(MemberSignup memberSignup) {
@@ -43,6 +43,10 @@ public class MemberService {
         return member;
     }
 
+    public Member getById(Long memberId) {
+        Member member = memberRepository.getById(memberId);
+        return member;
+    }
     @Transactional
     public MemberResponse update(Long id, MemberUpdate memberUpdate) {
         Member member = memberRepository.getById(id);
@@ -53,8 +57,13 @@ public class MemberService {
     @Transactional
     public void delete(Long id) {
         Member member = memberRepository.getById(id);
-        List<Session> sessionList = sessionRepository.findAllByMemberId(member.getId());
-        sessionRepository.deleteList(sessionList);
+        deleteSessionsAboutMember(member);
         memberRepository.delete(member);
+    }
+
+    @Transactional
+    public void deleteSessionsAboutMember(Member member) {
+        List<Session> sessionList = sessionService.findAllByMember(member);
+        sessionService.deleteSessionList(sessionList);
     }
 }

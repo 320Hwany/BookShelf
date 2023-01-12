@@ -29,7 +29,7 @@ public class Book {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Long likes;
+    private Integer likes;
 
     private boolean bookMark;
 

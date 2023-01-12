@@ -51,6 +51,29 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    public List<Book> findByLikes(BookSearch bookSearch) {
+        return jpaQueryFactory.selectFrom(book)
+                .leftJoin(book.member, QMember.member)
+                .fetchJoin()
+                .limit(bookSearch.getLimit())
+                .offset(bookSearch.getOffset())
+                .orderBy(book.likes.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<Book> findBookmarkedBooks(BookSearch bookSearch) {
+        return jpaQueryFactory.selectFrom(book)
+                .where(book.bookMark.eq(true))
+                .leftJoin(book.member, QMember.member)
+                .fetchJoin()
+                .limit(bookSearch.getLimit())
+                .offset(bookSearch.getOffset())
+                .orderBy(book.id.desc())
+                .fetch();
+    }
+
+    @Override
     public void deleteAll() {
         bookJpaRepository.deleteAll();
     }

@@ -1,10 +1,11 @@
 package com.bookshelf.book.dto.request;
 
-import lombok.Getter;
+import org.springframework.stereotype.Component;
 
-@Getter
-public class CreateLikesAndBookmark {
+@Component
+public interface CreateLikesAndBookmark {
 
-    private final Long likes = 0L;
-    private final boolean bookmark = false;
+    Integer getLikes();
+
+    Boolean isBookmark();
 }

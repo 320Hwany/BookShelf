@@ -37,13 +37,19 @@ public class MemberController {
                 .build();
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/member")
     public void updateMember(MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate) {
         memberService.update(memberSession.getId(), memberUpdate);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/member")
     public void deleteMember(MemberSession memberSession) {
         memberService.delete(memberSession.getId());
+    }
+
+    @PostMapping("/logout")
+    public void logout(MemberLogout memberLogout) {
+        Member member = memberService.getById(memberLogout.getId());
+        memberService.deleteSessionsAboutMember(member);
     }
 }

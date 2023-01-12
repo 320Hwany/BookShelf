@@ -14,6 +14,9 @@ public interface BookRepository {
     Book getById(Long id);
 
     List<Book> findByLatest(BookSearch bookSearch);
+    List<Book> findByLikes(BookSearch bookSearch);
+
+    List<Book> findBookmarkedBooks(BookSearch bookSearch);
 
     void deleteAll();
 

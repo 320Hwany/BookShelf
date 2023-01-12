@@ -1,0 +1,9 @@
+### 책 컨텐츠 저장
+
+POST http://localhost:8080/book-content/1
+Content-Type: application/json
+
+{
+  "page": 130,
+  "content": "안녕하세요"
+}

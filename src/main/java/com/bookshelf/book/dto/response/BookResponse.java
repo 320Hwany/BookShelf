@@ -11,7 +11,7 @@ public class BookResponse {
 
     private Member member;
 
-    private Long likes;
+    private Integer likes;
 
     private boolean bookMark;
 

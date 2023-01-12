@@ -125,7 +125,7 @@ class BookControllerTest {
             Book book = Book.builder()
                     .title("책 제목")
                     .member(member)
-                    .createLikesAndBookmark(new CreateLikesAndBookmark())
+                    .createLikesAndBookmark(new TestLikesAndBookmark(1, false))
                     .build();
             bookRepository.save(book);
 
@@ -134,7 +134,7 @@ class BookControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.title").value("책 제목"))
                     .andExpect(jsonPath("$.member.name").value("회원이름"))
-                    .andExpect(jsonPath("$.likes").value(0L))
+                    .andExpect(jsonPath("$.likes").value(1))
                     .andExpect(jsonPath("$.bookMark").value(false))
                     .andDo(print());
         }
@@ -149,23 +149,70 @@ class BookControllerTest {
                     .mapToObj(i -> Book.builder()
                             .title("책 제목 " + i)
                             .member(member)
-                            .createLikesAndBookmark(new CreateLikesAndBookmark())
+                            .createLikesAndBookmark(new TestLikesAndBookmark(i, false))
                             .build())
                     .collect(Collectors.toList());
 
             bookRepository.saveAll(bookList);
 
             // expected
-            mockMvc.perform(get("/books-latest?page=2"))
+            mockMvc.perform(get("/books-orderBy-latest?page=2"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.length()").value(10))
                     .andExpect(jsonPath("$[0].title").value("책 제목 20"))
-                    .andExpect(jsonPath("$[0].likes").value(0))
+                    .andExpect(jsonPath("$[0].likes").value(20))
+                    .andExpect(jsonPath("$[0].bookMark").value(false))
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("책을 좋아요 많은 순으로 정렬합니다")
+        void getBooksByLikes() throws Exception {
+            // given
+            memberRepository.save(member);
+
+            List<Book> bookList = IntStream.range(1, 31)
+                    .mapToObj(i -> Book.builder()
+                            .title("책 제목 " + i)
+                            .member(member)
+                            .createLikesAndBookmark(new TestLikesAndBookmark(i, false))
+                            .build())
+                    .collect(Collectors.toList());
+
+            bookRepository.saveAll(bookList);
+
+            // expected
+            mockMvc.perform(get("/books-orderBy-latest?page=2"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.length()").value(10))
+                    .andExpect(jsonPath("$[0].title").value("책 제목 20"))
+                    .andExpect(jsonPath("$[0].likes").value(20))
                     .andExpect(jsonPath("$[0].bookMark").value(false))
                     .andDo(print());
         }
     }
 
+
+    private class TestLikesAndBookmark implements CreateLikesAndBookmark {
+
+        private Integer likes;
+        private Boolean bookmark;
+
+        public TestLikesAndBookmark(Integer likes, Boolean bookmark) {
+            this.likes = likes;
+            this.bookmark = bookmark;
+        }
+
+        @Override
+        public Integer getLikes() {
+            return likes;
+        }
+
+        @Override
+        public Boolean isBookmark() {
+            return bookmark;
+        }
+    }
 
     private class TestCreateAccessToken implements CreateAccessToken {
 

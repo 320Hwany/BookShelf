@@ -23,6 +23,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
+    private final CreateLikesAndBookmark createLikesAndBookmark;
 
     public Book getById(Long id) {
         Book book = bookRepository.getById(id);
@@ -40,10 +41,32 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
+    public List<BookResponse> findBookResponsesByLikes(Integer page) {
+        BookSearch bookSearch = BookSearch.builder()
+                .page(page)
+                .booksLimit(new BooksLimit())
+                .build();
+
+        return bookRepository.findByLikes(bookSearch).stream()
+                .map(BookResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookResponse> findBookmarkedBooks(Integer page) {
+        BookSearch bookSearch = BookSearch.builder()
+                .page(page)
+                .booksLimit(new BooksLimit())
+                .build();
+
+        return bookRepository.findBookmarkedBooks(bookSearch).stream()
+                .map(BookResponse::new)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void save(Long memberId, BookSave bookSave) {
         Member member = memberRepository.getById(memberId);
-        Book book = new Book(member, bookSave, new CreateLikesAndBookmark());
+        Book book = new Book(member, bookSave, createLikesAndBookmark);
         bookRepository.save(book);
     }
 }
