@@ -62,9 +62,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public List<Book> findBookmarkedBooks(BookSearch bookSearch) {
+    public List<Book> findBookmarkedBooks(Long id, BookSearch bookSearch) {
         return jpaQueryFactory.selectFrom(book)
                 .where(book.bookMark.eq(true))
+                .where(book.member.id.eq(id))
                 .leftJoin(book.member, QMember.member)
                 .fetchJoin()
                 .limit(bookSearch.getLimit())

@@ -2,8 +2,10 @@ package com.bookshelf.contentstore.domain;
 
 import com.bookshelf.book.domain.Book;
 import com.bookshelf.contentstore.dto.request.ContentSave;
+import com.bookshelf.contentstore.dto.request.ContentUpdate;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -12,6 +14,7 @@ import static javax.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @NoArgsConstructor(access = PROTECTED)
+@Getter
 @Entity
 public class ContentStore {
 
@@ -33,5 +36,10 @@ public class ContentStore {
         this.book = book;
         this.page = contentSave.getPage();
         this.content = contentSave.getContent();
+    }
+
+    public void update(ContentUpdate contentUpdate) {
+        this.page = contentUpdate.getPage();
+        this.content = contentUpdate.getContent();
     }
 }

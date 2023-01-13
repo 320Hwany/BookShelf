@@ -20,8 +20,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findByName(String name) {
-        return memberJpaRepository.findByName(name);
+    public Optional<Member> findByUsername(String username) {
+        return memberJpaRepository.findByUsername(username);
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        return memberJpaRepository.findByEmail(email);
     }
 
     @Override
@@ -41,6 +46,13 @@ public class MemberRepositoryImpl implements MemberRepository {
         Member member = memberJpaRepository.findByEmailAndPassword(email, password)
                 .orElseThrow(MemberNotFoundException::new);
         return member;
+    }
+
+    @Override
+    public Boolean checkByMemberLogin(MemberLogin memberLogin) {
+        Member member = memberJpaRepository.findByEmailAndPassword(memberLogin.getEmail(), memberLogin.getPassword())
+                .orElseThrow(MemberNotFoundException::new);
+        return true;
     }
 
     @Override

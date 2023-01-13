@@ -5,10 +5,9 @@ import com.bookshelf.book.dto.request.BookSave;
 import com.bookshelf.book.dto.request.CreateLikesAndBookmark;
 import com.bookshelf.book.repository.BookRepository;
 import com.bookshelf.member.domain.Member;
-import com.bookshelf.member.domain.Session;
-import com.bookshelf.member.dto.request.CreateAccessToken;
+import com.bookshelf.member.dto.request.MemberLogin;
 import com.bookshelf.member.repository.MemberRepository;
-import com.bookshelf.member.repository.SessionRepository;
+import com.bookshelf.member.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseCookie;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.servlet.http.Cookie;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -51,14 +49,14 @@ class BookControllerTest {
     private MemberRepository memberRepository;
 
     @Autowired
-    private SessionRepository sessionRepository;
+    private MemberService memberService;
 
     @Nested
     @DisplayName("책 등록 테스트 - Controller")
     class SaveBook {
 
         private Member member = Member.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
@@ -67,23 +65,13 @@ class BookControllerTest {
         @BeforeEach
         void clean() {
             bookRepository.deleteAll();
-            sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
 
         @Test
-        @DisplayName("조건에 맞으면 책 정보가 저장됩니다 - 성공")
+        @DisplayName("인증된 회원만 책을 저장할 수 있습니다 - 실패")
         void saveBook() throws Exception {
             // given
-            TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
-            Session session = Session.builder()
-                    .member(member)
-                    .createAccessToken(testCreateAccessToken)
-                    .build();
-            memberRepository.save(member);
-            sessionRepository.save(session);
-            ResponseCookie cookie = session.setCookie();
-
             BookSave bookSave = BookSave.builder()
                     .title("책 제목")
                     .build();
@@ -91,10 +79,9 @@ class BookControllerTest {
 
             // expected
             mockMvc.perform(post("/book")
-                            .cookie(new Cookie("SESSION", cookie.getValue()))
                             .contentType(APPLICATION_JSON)
                             .content(json))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isUnauthorized())
                     .andDo(print());
         }
     }
@@ -104,7 +91,7 @@ class BookControllerTest {
     class GetBook {
 
         private Member member = Member.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
@@ -112,7 +99,6 @@ class BookControllerTest {
         @BeforeEach
         void clean() {
             bookRepository.deleteAll();
-            sessionRepository.deleteAll();
             memberRepository.deleteAll();
         }
 
@@ -133,7 +119,7 @@ class BookControllerTest {
             mockMvc.perform(get("/book/{bookId}", book.getId()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.title").value("책 제목"))
-                    .andExpect(jsonPath("$.member.name").value("회원이름"))
+                    .andExpect(jsonPath("$.member.username").value("회원이름"))
                     .andExpect(jsonPath("$.likes").value(1))
                     .andExpect(jsonPath("$.bookMark").value(false))
                     .andDo(print());
@@ -211,15 +197,6 @@ class BookControllerTest {
         @Override
         public Boolean isBookmark() {
             return bookmark;
-        }
-    }
-
-    private class TestCreateAccessToken implements CreateAccessToken {
-
-        private final String MESSAGE = "testToken";
-        @Override
-        public String getAccessToken() {
-            return MESSAGE;
         }
     }
 }

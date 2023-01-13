@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class MemberResponse {
 
-    private String name;
+    private String username;
 
     private String email;
 
@@ -15,7 +15,7 @@ public class MemberResponse {
     private Integer age;
 
     public MemberResponse(Member member) {
-        this.name = member.getName();
+        this.username = member.getUsername();
         this.email = member.getEmail();
         this.password = member.getPassword();
         this.age = member.getAge();

@@ -6,6 +6,7 @@ import com.bookshelf.member.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 
@@ -46,5 +47,9 @@ public class Book {
         this.member = member;
         this.likes = createLikesAndBookmark.getLikes();
         this.bookMark = createLikesAndBookmark.isBookmark();
+    }
+
+    public void thumbsUp() {
+        likes += 1;
     }
 }

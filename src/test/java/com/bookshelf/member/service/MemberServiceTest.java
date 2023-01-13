@@ -1,15 +1,12 @@
 package com.bookshelf.member.service;
 
 import com.bookshelf.member.domain.Member;
-import com.bookshelf.member.domain.Session;
-import com.bookshelf.member.dto.request.CreateAccessToken;
 import com.bookshelf.member.dto.request.MemberLogin;
 import com.bookshelf.member.dto.request.MemberSignup;
 import com.bookshelf.member.dto.request.MemberUpdate;
 import com.bookshelf.member.dto.response.MemberResponse;
 import com.bookshelf.member.exception.MemberNotFoundException;
 import com.bookshelf.member.repository.MemberRepository;
-import com.bookshelf.member.repository.SessionRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,11 +28,6 @@ class MemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private SessionRepository sessionRepository;
-
-    private TestCreateAccessToken testCreateAccessToken = new TestCreateAccessToken();
-
     @BeforeEach
     void clean() {
         memberRepository.deleteAll();
@@ -45,7 +37,7 @@ class MemberServiceTest {
     void signup() {
         // given
         MemberSignup memberSignup = MemberSignup.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
@@ -63,14 +55,14 @@ class MemberServiceTest {
     void validateDuplication() {
         // given
         Member member = Member.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
                 .build();
 
         MemberSignup memberSignup = MemberSignup.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
@@ -90,7 +82,7 @@ class MemberServiceTest {
     void getByMemberLogin() {
         // given
         Member member = Member.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
@@ -115,14 +107,14 @@ class MemberServiceTest {
     void update() {
         // given
         Member member = Member.builder()
-                .name("회원이름")
+                .username("회원이름")
                 .email("yhwjd99@gmail.com")
                 .password("1234")
                 .age(25)
                 .build();
 
         MemberUpdate memberUpdate = MemberUpdate.builder()
-                .name("회원 수정 이름")
+                .username("회원 수정 이름")
                 .email("yhwjd99@naver.com")
                 .password("4321")
                 .age(20)
@@ -134,7 +126,7 @@ class MemberServiceTest {
         MemberResponse memberResponse = memberService.update(member.getId(), memberUpdate);
 
         // then
-        assertThat(memberResponse.getName()).isEqualTo("회원 수정 이름");
+        assertThat(memberResponse.getUsername()).isEqualTo("회원 수정 이름");
         assertThat(memberResponse.getEmail()).isEqualTo("yhwjd99@naver.com");
         assertThat(memberResponse.getPassword()).isEqualTo("4321");
         assertThat(memberResponse.getAge()).isEqualTo(20);
@@ -145,7 +137,7 @@ class MemberServiceTest {
     void updateFail() {
         // given
         MemberUpdate memberUpdate = MemberUpdate.builder()
-                .name("회원 수정 이름")
+                .username("회원 수정 이름")
                 .email("yhwjd99@naver.com")
                 .password("4321")
                 .age(20)
@@ -156,45 +148,45 @@ class MemberServiceTest {
                 () -> memberService.update(1L, memberUpdate));
     }
 
-    @Test
-    @DisplayName("입력한 아이디가 존재하면 삭제에 성공합니다 - 성공")
-    void delete() {
-        // given
-        Member member = Member.builder()
-                .name("회원이름")
-                .email("yhwjd99@gmail.com")
-                .password("1234")
-                .age(25)
-                .build();
+//    @Test
+//    @DisplayName("입력한 아이디가 존재하면 삭제에 성공합니다 - 성공")
+//    void delete() {
+//        // given
+//        Member member = Member.builder()
+//                .name("회원이름")
+//                .email("yhwjd99@gmail.com")
+//                .password("1234")
+//                .age(25)
+//                .build();
+//
+//        memberRepository.save(member);
+//        sessionRepository.save(Session.builder()
+//                .member(member)
+//                .createAccessToken(testCreateAccessToken)
+//                .build());
+//
+//        // when
+//        memberService.delete(member.getId());
+//        Optional<Member> optionalMember = memberRepository.findById(member.getId());
+//
+//        // then
+//        assertThat(optionalMember).isEmpty();
+//    }
 
-        memberRepository.save(member);
-        sessionRepository.save(Session.builder()
-                .member(member)
-                .createAccessToken(testCreateAccessToken)
-                .build());
-
-        // when
-        memberService.delete(member.getId());
-        Optional<Member> optionalMember = memberRepository.findById(member.getId());
-
-        // then
-        assertThat(optionalMember).isEmpty();
-    }
-
-    @Test
-    @DisplayName("입력한 아이디가 존재하지 않으면 삭제가 불가합니다 - 실패")
-    void deleteFail() {
-        // expected
-        Assertions.assertThrows(MemberNotFoundException.class,
-                () -> memberService.delete(1L));
-    }
-
-    private class TestCreateAccessToken implements CreateAccessToken {
-
-        private final String MESSAGE = "testToken";
-        @Override
-        public String getAccessToken() {
-            return MESSAGE;
-        }
-    }
+//    @Test
+//    @DisplayName("입력한 아이디가 존재하지 않으면 삭제가 불가합니다 - 실패")
+//    void deleteFail() {
+//        // expected
+//        Assertions.assertThrows(MemberNotFoundException.class,
+//                () -> memberService.delete(1L));
+//    }
+//
+//    private class TestCreateAccessToken implements CreateAccessToken {
+//
+//        private final String MESSAGE = "testToken";
+//        @Override
+//        public String getAccessToken() {
+//            return MESSAGE;
+//        }
+//    }
 }

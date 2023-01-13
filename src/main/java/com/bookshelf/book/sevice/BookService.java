@@ -52,13 +52,13 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookResponse> findBookmarkedBooks(Integer page) {
+    public List<BookResponse> findBookmarkedBooks(Long id, Integer page) {
         BookSearch bookSearch = BookSearch.builder()
                 .page(page)
                 .booksLimit(new BooksLimit())
                 .build();
 
-        return bookRepository.findBookmarkedBooks(bookSearch).stream()
+        return bookRepository.findBookmarkedBooks(id, bookSearch).stream()
                 .map(BookResponse::new)
                 .collect(Collectors.toList());
     }
@@ -68,5 +68,10 @@ public class BookService {
         Member member = memberRepository.getById(memberId);
         Book book = new Book(member, bookSave, createLikesAndBookmark);
         bookRepository.save(book);
+    }
+
+    @Transactional
+    public void thumbsUp(Book book) {
+        book.thumbsUp();
     }
 }

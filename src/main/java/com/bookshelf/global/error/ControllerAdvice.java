@@ -1,21 +1,23 @@
 package com.bookshelf.global.error;
 
 import com.bookshelf.book.exception.BookNotFoundException;
+import com.bookshelf.contentstore.exception.ContentStoreNotFoundException;
+import com.bookshelf.global.error.dto.ErrorResponse;
 import com.bookshelf.member.exception.MemberNotFoundException;
 import com.bookshelf.member.exception.NameDuplicateException;
 import com.bookshelf.member.exception.UnauthorizedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@ControllerAdvice
-public class ExceptionController {
+@RestControllerAdvice
+public class ControllerAdvice {
 
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -46,6 +48,17 @@ public class ExceptionController {
     @ResponseBody
     @ExceptionHandler(BookNotFoundException.class)
     public ResponseEntity<ErrorResponse> BookNotFound(BookNotFoundException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(e.getStatusCode())
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(NOT_FOUND).body(errorResponse);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(ContentStoreNotFoundException.class)
+    public ResponseEntity<ErrorResponse> ContentStoreNotFound(ContentStoreNotFoundException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(e.getStatusCode())
                 .message(e.getMessage())

@@ -7,11 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+import java.io.Serializable;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class MemberLogin {
+public class MemberLogin implements Serializable {
 
     @Email(message = "이메일을 입력해주세요")
     private String email;

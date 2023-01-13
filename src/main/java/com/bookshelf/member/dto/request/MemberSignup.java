@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class MemberSignup {
 
     @NotBlank(message = "회원 이름을 입력해주세요")
-    private String name;
+    private String username;
 
     @Email(message = "이메일을 입력해주세요")
     private String email;
@@ -28,8 +28,8 @@ public class MemberSignup {
     private Integer age;
 
     @Builder
-    public MemberSignup(String name, String email, String password, Integer age) {
-        this.name = name;
+    public MemberSignup(String username, String email, String password, Integer age) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.age = age;

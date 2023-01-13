@@ -1,6 +1,6 @@
 package com.bookshelf.global.config;
 
-import com.bookshelf.member.repository.SessionRepository;
+import com.bookshelf.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,11 +12,10 @@ import java.util.List;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final SessionRepository sessionRepository;
+    private final MemberService memberService;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new AuthResolver(sessionRepository));
-        resolvers.add(new LogoutResolver(sessionRepository));
+        resolvers.add(new AuthResolver(memberService));
     }
 }

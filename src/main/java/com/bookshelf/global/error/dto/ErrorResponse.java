@@ -1,4 +1,4 @@
-package com.bookshelf.global.error;
+package com.bookshelf.global.error.dto;
 
 import lombok.Builder;
 import lombok.Getter;

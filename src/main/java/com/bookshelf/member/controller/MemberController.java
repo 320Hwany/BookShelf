@@ -1,26 +1,24 @@
 package com.bookshelf.member.controller;
 
+import com.bookshelf.book.domain.Book;
+import com.bookshelf.book.sevice.BookService;
 import com.bookshelf.member.domain.Member;
-import com.bookshelf.member.domain.Session;
 import com.bookshelf.member.dto.request.*;
 import com.bookshelf.member.service.MemberService;
-import com.bookshelf.member.service.SessionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 @RequiredArgsConstructor
 @RestController
 public class MemberController {
 
     private final MemberService memberService;
-    private final SessionService sessionService;
-    private final CreateAccessToken createAccessToken;
 
     @PostMapping("/signup")
     public void signup(@RequestBody @Valid MemberSignup memberSignup) {
@@ -28,18 +26,18 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid MemberLogin memberLogin) {
-        Member member = memberService.getByMemberLogin(memberLogin);
-        Session session = sessionService.makeSession(member, createAccessToken);
-        ResponseCookie cookie = session.setCookie();
-        return ResponseEntity.ok()
-                .header(SET_COOKIE, cookie.toString())
-                .build();
+    public void login(@RequestBody @Valid MemberLogin memberLogin,
+                      HttpServletRequest httpServletRequest) {
+        memberService.checkByMemberLogin(memberLogin);
+        HttpSession session = httpServletRequest.getSession(true);
+        session.setAttribute("memberLogin", memberLogin);
     }
 
     @PatchMapping("/member")
-    public void updateMember(MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate) {
+    public void updateMember(MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate,
+                             HttpSession httpSession) {
         memberService.update(memberSession.getId(), memberUpdate);
+        httpSession.invalidate();
     }
 
     @DeleteMapping("/member")
@@ -48,8 +46,9 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public void logout(MemberLogout memberLogout) {
-        Member member = memberService.getById(memberLogout.getId());
-        memberService.deleteSessionsAboutMember(member);
+    public void logout(MemberSession memberSession, HttpServletRequest request, HttpSession httpSession) {
+        Member member = memberService.getById(memberSession.getId());
+        HttpSession session = request.getSession(false);
+        session.invalidate();
     }
 }
