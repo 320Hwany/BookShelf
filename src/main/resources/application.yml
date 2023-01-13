@@ -19,4 +19,3 @@ spring:
     store-type: jdbc
     jdbc:
       initialize-schema: always
-

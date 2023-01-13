@@ -1,12 +1,9 @@
 package com.bookshelf.member.controller;
 
-import com.bookshelf.book.domain.Book;
-import com.bookshelf.book.sevice.BookService;
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.dto.request.*;
 import com.bookshelf.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
