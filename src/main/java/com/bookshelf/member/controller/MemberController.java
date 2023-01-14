@@ -3,8 +3,11 @@ package com.bookshelf.member.controller;
 import com.bookshelf.global.config.annotation.Login;
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.dto.request.*;
+import com.bookshelf.member.dto.response.MemberResponse;
 import com.bookshelf.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +22,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public void signup(@RequestBody @Valid MemberSignup memberSignup) {
+    public ResponseEntity<MemberResponse> signup(@RequestBody @Valid MemberSignup memberSignup) {
         memberService.signup(memberSignup);
+        return ResponseEntity.ok(new MemberResponse(memberSignup));
     }
 
     @PostMapping("/login")
@@ -29,6 +33,7 @@ public class MemberController {
         memberService.checkByMemberLogin(memberLogin);
         HttpSession session = httpServletRequest.getSession(true);
         session.setAttribute("memberLogin", memberLogin);
+        httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
     @PatchMapping("/member")
