@@ -3,6 +3,7 @@ package com.bookshelf.contentstore.domain;
 import com.bookshelf.book.domain.Book;
 import com.bookshelf.contentstore.dto.request.ContentSave;
 import com.bookshelf.contentstore.dto.request.ContentUpdate;
+import com.bookshelf.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class ContentStore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "book_content_store_id")
+    @Column(name = "content_store_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)

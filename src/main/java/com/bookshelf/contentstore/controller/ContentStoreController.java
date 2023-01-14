@@ -6,6 +6,7 @@ import com.bookshelf.contentstore.dto.request.ContentUpdate;
 import com.bookshelf.contentstore.dto.response.ContentStoreResponse;
 import com.bookshelf.contentstore.dto.request.ContentSave;
 import com.bookshelf.contentstore.service.ContentStoreService;
+import com.bookshelf.global.config.annotation.Login;
 import com.bookshelf.member.dto.request.MemberSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,29 +23,29 @@ public class ContentStoreController {
     private final BookService bookService;
 
     @PostMapping("/book-content/{bookId}")
-    public void save(@PathVariable Long bookId, @RequestBody @Valid ContentSave contentSave,
-                     MemberSession memberSession) {
+    public void save(@Login MemberSession memberSession, @PathVariable Long bookId,
+                     @RequestBody @Valid ContentSave contentSave) {
         Book book = bookService.getById(bookId);
         contentStoreService.save(book, contentSave);
     }
 
     @GetMapping("/book-content/{bookId}")
-    public ResponseEntity<List<ContentStoreResponse>> getBookContent(@PathVariable Long bookId,
-                                                                     MemberSession memberSession) {
+    public ResponseEntity<List<ContentStoreResponse>> getBookContent(@Login MemberSession memberSession,
+                                                                     @PathVariable Long bookId) {
         List<ContentStoreResponse> contentStoreOfBook = contentStoreService.findContentStoreOfBook(bookId);
         return ResponseEntity.ok(contentStoreOfBook);
     }
 
     @PatchMapping("/book-content/{bookContentId}")
-    public void updateBookContent(@PathVariable Long bookContentId,
-                                  @RequestBody @Valid ContentUpdate contentUpdate,
-                                  MemberSession memberSession) {
+    public void updateBookContent(@Login MemberSession memberSession,
+                                  @PathVariable Long bookContentId,
+                                  @RequestBody @Valid ContentUpdate contentUpdate) {
         contentStoreService.update(bookContentId, contentUpdate);
     }
 
     @DeleteMapping("/book-content/{bookContentId}")
-    public void deleteBookContent(@PathVariable Long bookContentId,
-                                  MemberSession memberSession) {
+    public void deleteBookContent(@Login MemberSession memberSession,
+                                  @PathVariable Long bookContentId) {
         contentStoreService.delete(bookContentId);
     }
 }

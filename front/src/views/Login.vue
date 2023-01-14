@@ -2,20 +2,31 @@
 import {ref} from "vue";
 
 import axios from "axios";
+import {useRouter} from "vue-router";
 
 const email = ref("")
 const password = ref("")
 
+const router = useRouter()
+
 const login = function () {
-  axios.post("http://localhost:8080/login", {
+  axios.post("/api/login", {
     email: email.value,
     password: password.value
   })
+      .then(() => {
+        router.replace({name: "main"});
+      })
 }
 </script>
 
 <template>
+
   <div>
+    <h2>Book Shelf</h2>
+  </div>
+
+  <div class="mt-2">
 <el-input v-model="email" placeholder="이메일을 입력해주세요" />
   </div>
 

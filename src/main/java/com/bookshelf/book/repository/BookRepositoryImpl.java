@@ -40,6 +40,17 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    public List<Book> findForMember(Long memberId, BookSearch bookSearch) {
+        return jpaQueryFactory.selectFrom(book)
+                .leftJoin(book.member, QMember.member)
+                .fetchJoin()
+                .where(book.member.id.eq(memberId))
+                .limit(bookSearch.getLimit())
+                .offset(bookSearch.getOffset())
+                .fetch();
+    }
+
+    @Override
     public List<Book> findByLatest(BookSearch bookSearch) {
         return jpaQueryFactory.selectFrom(book)
                 .leftJoin(book.member, QMember.member)
@@ -62,10 +73,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public List<Book> findBookmarkedBooks(Long id, BookSearch bookSearch) {
+    public List<Book> findBookmarkedBooks(Long memberId, BookSearch bookSearch) {
         return jpaQueryFactory.selectFrom(book)
                 .where(book.bookMark.eq(true))
-                .where(book.member.id.eq(id))
+                .where(book.member.id.eq(memberId))
                 .leftJoin(book.member, QMember.member)
                 .fetchJoin()
                 .limit(bookSearch.getLimit())

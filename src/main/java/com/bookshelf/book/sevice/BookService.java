@@ -30,6 +30,17 @@ public class BookService {
         return book;
     }
 
+    public List<BookResponse> findBookResponsesForMember(Long memberId, Integer page) {
+        BookSearch bookSearch = BookSearch.builder()
+                .page(page)
+                .booksLimit(new BooksLimit())
+                .build();
+
+        return bookRepository.findForMember(memberId, bookSearch).stream()
+                .map(BookResponse::new)
+                .collect(Collectors.toList());
+    }
+
     public List<BookResponse> findBookResponsesByLatest(Integer page) {
         BookSearch bookSearch = BookSearch.builder()
                 .page(page)

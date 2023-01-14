@@ -1,5 +1,6 @@
 package com.bookshelf.member.controller;
 
+import com.bookshelf.global.config.annotation.Login;
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.dto.request.*;
 import com.bookshelf.member.service.MemberService;
@@ -31,19 +32,19 @@ public class MemberController {
     }
 
     @PatchMapping("/member")
-    public void updateMember(MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate,
+    public void updateMember(@Login MemberSession memberSession, @RequestBody @Valid MemberUpdate memberUpdate,
                              HttpSession httpSession) {
         memberService.update(memberSession.getId(), memberUpdate);
         httpSession.invalidate();
     }
 
     @DeleteMapping("/member")
-    public void deleteMember(MemberSession memberSession) {
+    public void deleteMember(@Login MemberSession memberSession) {
         memberService.delete(memberSession.getId());
     }
 
     @PostMapping("/logout")
-    public void logout(MemberSession memberSession, HttpServletRequest request, HttpSession httpSession) {
+    public void logout(@Login MemberSession memberSession, HttpServletRequest request, HttpSession httpSession) {
         Member member = memberService.getById(memberSession.getId());
         HttpSession session = request.getSession(false);
         session.invalidate();

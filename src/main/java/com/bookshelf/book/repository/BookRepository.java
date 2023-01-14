@@ -13,10 +13,12 @@ public interface BookRepository {
 
     Book getById(Long id);
 
+    List<Book> findForMember(Long memberId, BookSearch bookSearch);
+
     List<Book> findByLatest(BookSearch bookSearch);
     List<Book> findByLikes(BookSearch bookSearch);
 
-    List<Book> findBookmarkedBooks(Long id, BookSearch bookSearch);
+    List<Book> findBookmarkedBooks(Long memberId, BookSearch bookSearch);
 
     void deleteAll();
 

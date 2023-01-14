@@ -1,5 +1,6 @@
 package com.bookshelf.global.config;
 
+import com.bookshelf.global.config.annotation.Login;
 import com.bookshelf.member.domain.Member;
 import com.bookshelf.member.dto.request.MemberLogin;
 import com.bookshelf.member.dto.request.MemberSession;
@@ -22,7 +23,9 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(MemberSession.class);
+        boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
+        boolean hasMemberSessionType = parameter.getParameterType().equals(MemberSession.class);
+        return hasLoginAnnotation && hasMemberSessionType;
     }
 
     @Override
